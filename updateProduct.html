@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Product with API</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="update.css">
+  </head>
+  <body>
+
+    
+    
+    
+    <div class="container mt-5">
+      <form id="productForm" class="needs-validation">
+        
+        
+        <div class="changeImage">
+          <div class="imageBox">
+            <img src="" alt="" id="profile-pic">
+          </div>
+          <div class="uplode-image">
+              <label class="upload-label d-block" for="input-file">Update image</label>
+              <input class="upload-input" type="file" accept="image/jpeg, image/png, image/jpg" id="input-file">
+          </div>
+          
+        </div>
+
+        
+        
+        <div class="form-group">
+          <label for="productName">Product Name:</label>
+          <input
+            type="text"
+            class="form-control shadow-none"
+            id="productName"
+            name="productName"
+            required
+          />
+          <div class="invalid-feedback">Please enter a product name.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="productPrice">Product Price:</label>
+          <input
+            type="number"
+            step="any"
+            class="form-control shadow-none"
+            id="productPrice"
+            name="productPrice"
+            required
+          />
+          <div class="invalid-feedback">
+            Please enter a valid product price.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productDescription">Product Description:</label>
+          <input
+            type="text"
+            class="form-control shadow-none"
+            id="productDescription"
+            name="productDescription"
+            required
+          />
+          <div class="invalid-feedback">Please enter a description.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="productCategory">Product Category:</label>
+          <input
+            type="text"
+            class="form-control shadow-none"
+            id="productCategory"
+            name="productCategory"
+            required
+          />
+          <div class="invalid-feedback">Please enter a category.</div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-send" onclick="updateProduct(); showPopup();">
+          Update Product
+        </button>
+
+        
+        <div class="container1"> 
+          <div class="card" id="pup">
+            <h2>Congratulation</h2>
+            <p>Your Data Updated Successfuly.</p>
+            <button class="btn-close" onclick="window.history.back(); hidePopup();">Close</button>
+          </div>
+        </div>
+      </form>
+     
+    </div>
+
+
+    
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+      const getProduct = async () => {
+        const { search } = location;
+
+        // console.log(search);
+        const [, id] = search.split("=");
+        // console.log(id);
+
+        const api = `https://fakestoreapi.com/products/${id}`;
+
+        const res = await fetch(api);
+
+        const data = await res.json();
+
+        console.log(data);
+
+        
+        let image =  document.getElementById("profile-pic"); 
+        let uploadInput = document.getElementById("input-file");
+  
+        uploadInput.addEventListener('change' , () => {
+          image.src = URL.createObjectURL(uploadInput.files[0]);
+        });
+        
+        document.getElementById("profile-pic").src = data.image
+        document.getElementById("productName").value = data.title;
+        document.getElementById("productPrice").value = +data.price;
+        document.getElementById("productDescription").value = data.description;
+        document.getElementById("productCategory").value = data.category;
+
+
+
+
+      };
+
+      getProduct();
+
+      // function setPrice() {
+      //   document.getElementById("productPrice").value = 10;
+      //   console.log("AAAA");
+      // }
+
+      function updateProduct() {
+        const form = document.getElementById("productForm");
+
+        if (form.checkValidity() === false) {
+          event.stopPropagation();
+          form.classList.add("was-validated");
+          return;
+        }
+        
+
+        const { search } = location;
+
+        // console.log(search);
+        const [, id] = search.split("=");
+
+        const apiUrl = `https://fakestoreapi.com/products/${id}`;
+
+        fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: document.getElementById("profile-pic").value,
+            title: document.getElementById("productName").value,
+            price: parseFloat(document.getElementById("productPrice").value),
+            description: document.getElementById("productDescription").value,
+            category: document.getElementById("productCategory").value,
+          }),
+        })
+          .then((response) => {
+            console.log(response);
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            form.reset();
+            form.classList.remove("was-validated");
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        event.preventDefault();
+      }
+
+
+      function showPopup() {
+        document.getElementById('pup').classList.add('open');
+      }
+      
+      function hidePopup() {
+        document.getElementById('pup').classList.remove('open');
+      }
+
+    </script>
+  </body>
+</html>

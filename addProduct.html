@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Product with API</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+  <form id="productForm" class="needs-validation" novalidate>
+    
+    <div class="form-group">
+      <label for="productName">Product Name:</label>
+      <input type="text" class="form-control shadow-none" id="productName" name="productName" required>
+      <div class="invalid-feedback">
+        Please enter a product name.
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="productPrice">Product Price:</label>
+      <input type="number" class="form-control shadow-none" id="productPrice" name="productPrice" required>
+      <div class="invalid-feedback">
+        Please enter a valid product price.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="productDescription">Product Description:</label>
+      <input type="text" class="form-control shadow-none" id="productDescription" name="productDescription" required>
+      <div class="invalid-feedback">
+        Please enter a description.
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="productCategory">Product Category:</label>
+      <input type="text" class="form-control shadow-none" id="productCategory" name="productCategory" required>
+      <div class="invalid-feedback">
+        Please enter a category.
+      </div>
+    </div>
+    
+    <button type="button" class="btn btn-primary" onclick="addNewProduct()">Add New Product</button>
+  </form>
+</div>
+
+<!-- Add Bootstrap JS and Popper.js CDN links -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+function addNewProduct() {
+  const form = document.getElementById('productForm');
+
+  if (form.checkValidity() === false) {
+    event.stopPropagation();
+    form.classList.add('was-validated');
+    return;
+  }
+
+  const apiUrl = 'https://fakestoreapi.com/products'; 
+
+  fetch(apiUrl, {
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: document.getElementById('productName').value,
+      price: parseFloat(document.getElementById('productPrice').value),
+      description: document.getElementById('productDescription').value,
+      category: document.getElementById('productCategory').value,
+    }),
+  })
+  .then(response => {
+    console.log(response);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    form.reset();
+    form.classList.remove('was-validated');
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+  event.preventDefault();
+}
+</script>
+
+</body>
+</html>
